@@ -310,10 +310,11 @@ type Cluster struct {
 
 // Auth holds authentication configuration (BASIC, DIGEST, users)
 type Auth struct {
-	Basic       *Basic   `export:"true"`
-	Digest      *Digest  `export:"true"`
-	Forward     *Forward `export:"true"`
-	HeaderField string   `export:"true"`
+	Basic       *Basic      `export:"true"`
+	Digest      *Digest     `export:"true"`
+	Forward     *Forward    `export:"true"`
+	Foundation  *Foundation `export:"true"`
+	HeaderField string      `export:"true"`
 }
 
 // Users authentication users
@@ -336,6 +337,14 @@ type Forward struct {
 	Address            string     `description:"Authentication server address"`
 	TLS                *ClientTLS `description:"Enable TLS support" export:"true"`
 	TrustForwardHeader bool       `description:"Trust X-Forwarded-* headers" export:"true"`
+}
+
+// Foundation authentication
+type Foundation struct {
+	Address            string     `description:"Authentication server address"`
+	TLS                *ClientTLS `description:"Enable TLS support" export:"true"`
+	TrustForwardHeader bool       `description:"Trust X-Forwarded-* headers" export:"true"`
+	Bypass             []string   `description:"Bypass Addresses" export:"true"`
 }
 
 // CanonicalDomain returns a lower case domain with trim space

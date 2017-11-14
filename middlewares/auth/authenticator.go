@@ -65,6 +65,10 @@ func NewAuthenticator(authConfig *types.Auth) (*Authenticator, error) {
 		authenticator.handler = negroni.HandlerFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 			Forward(authConfig.Forward, w, r, next)
 		})
+	} else if authConfig.Foundation != nil {
+		authenticator.handler = negroni.HandlerFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+			Foundation(authConfig.Foundation, w, r, next)
+		})
 	}
 	return &authenticator, nil
 }
