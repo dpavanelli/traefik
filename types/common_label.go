@@ -16,6 +16,7 @@ const (
 	LabelFrontendEntryPoints                     = LabelPrefix + "frontend.entryPoints"
 	LabelFrontendPassHostHeader                  = LabelPrefix + "frontend.passHostHeader"
 	LabelFrontendPriority                        = LabelPrefix + "frontend.priority"
+	LabelFrontendProtected                       = LabelPrefix + "frontend.protected"
 	LabelFrontendRule                            = LabelPrefix + "frontend.rule"
 	LabelFrontendRuleType                        = LabelPrefix + "frontend.rule.type"
 	LabelTraefikFrontendValue                    = LabelPrefix + "frontend.value"

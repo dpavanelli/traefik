@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"strings"
@@ -10,22 +9,25 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-func contains(s []string, e string) bool {
-	for _, a := range s {
-		if strings.HasPrefix(e, a) {
+func contains(e string) bool {
+	for k := range bypass {
+		if strings.HasPrefix(e, k) {
 			return true
 		}
 	}
 	return false
 }
 
-var data int
+var bypass = make(map[string]bool)
+
+//UpdateBypassAddress .
+func UpdateBypassAddress(address string) {
+	bypass[address] = true
+}
 
 // Foundation the authentication to a external server
 func Foundation(config *types.Foundation, w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-	fmt.Printf("\n------> Valor atual: %v", data)
-	data++
-	if !contains(config.Bypass, r.URL.RequestURI()) {
+	if !contains(r.URL.RequestURI()) {
 		foundationID, _ := r.Cookie("FOUNDATIONID")
 		if foundationID == nil || len(foundationID.Value) == 0 {
 			r.URL.RawQuery = "callback=foundation"

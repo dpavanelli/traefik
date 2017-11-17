@@ -16,6 +16,7 @@ import (
 	"reflect"
 	"regexp"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 
@@ -777,6 +778,11 @@ func (server *Server) loadConfig(configurations types.Configurations, globalConf
 				}
 
 				entryPoint := globalConfiguration.EntryPoints[entryPointName]
+				if !frontend.Protected {
+					for k := range frontend.Routes {
+						mauth.UpdateBypassAddress(strings.Split(frontend.Routes[k].Rule, ": ")[1])
+					}
+				}
 				n := negroni.New()
 				if entryPoint.Redirect != nil {
 					if redirectHandlers[entryPointName] != nil {

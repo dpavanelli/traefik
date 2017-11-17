@@ -137,6 +137,7 @@ type Frontend struct {
 	WhitelistSourceRange []string             `json:"whitelistSourceRange,omitempty"`
 	Headers              Headers              `json:"headers,omitempty"`
 	Errors               map[string]ErrorPage `json:"errors,omitempty"`
+	Protected            bool                 `json:"protected"`
 }
 
 // LoadBalancerMethod holds the method of load balancing to use.

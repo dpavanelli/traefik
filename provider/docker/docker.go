@@ -267,6 +267,7 @@ func (p *Provider) loadDockerConfig(containersInspected []dockerData) *types.Con
 		"getProtocol":                 p.getProtocol,
 		"getPassHostHeader":           p.getPassHostHeader,
 		"getPriority":                 p.getPriority,
+		"getProtected":                p.getProtected,
 		"getEntryPoints":              p.getEntryPoints,
 		"getBasicAuth":                p.getBasicAuth,
 		"getFrontendRule":             p.getFrontendRule,
@@ -292,6 +293,7 @@ func (p *Provider) loadDockerConfig(containersInspected []dockerData) *types.Con
 		"getServicePassHostHeader":    p.getServicePassHostHeader,
 		"getServicePriority":          p.getServicePriority,
 		"getServiceBackend":           p.getServiceBackend,
+		"getServiceProtected":         p.getServiceProtected,
 		"getWhitelistSourceRange":     p.getWhitelistSourceRange,
 	}
 	// filter containers
@@ -430,6 +432,14 @@ func (p *Provider) getServiceBackend(container dockerData, serviceName string) s
 		return value
 	}
 	return p.getBackend(container) + "-" + provider.Normalize(serviceName)
+}
+
+// TODO
+func (p *Provider) getServiceProtected(container dockerData, serviceName string) string {
+	if value, ok := getContainerServiceLabel(container, serviceName, "frontend.protected"); ok {
+		return value
+	}
+	return p.getProtected(container)
 }
 
 // Extract rule from labels for a given service and a given docker container
@@ -770,6 +780,13 @@ func (p *Provider) getPriority(container dockerData) string {
 		return priority
 	}
 	return "0"
+}
+
+func (p *Provider) getProtected(container dockerData) string {
+	if protected, err := getLabel(container, types.LabelFrontendProtected); err == nil {
+		return protected
+	}
+	return "true"
 }
 
 func (p *Provider) getEntryPoints(container dockerData) []string {
