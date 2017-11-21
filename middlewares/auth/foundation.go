@@ -9,9 +9,13 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-func contains(e string) bool {
-	for k := range bypass {
-		if strings.HasPrefix(e, k) {
+func isUnprotected(location string) bool {
+	url := location
+	if !strings.HasSuffix(location, "/") {
+		url = url + "/"
+	}
+	for unprotectedURL := range bypass {
+		if strings.HasPrefix(url, unprotectedURL) {
 			return true
 		}
 	}
@@ -22,6 +26,10 @@ var bypass = make(map[string]bool)
 
 //UpdateBypassAddress .
 func UpdateBypassAddress(address string) {
+	url := address
+	if !strings.HasSuffix(address, "/") {
+		url = url + "/"
+	}
 	bypass[address] = true
 }
 
@@ -32,7 +40,7 @@ func ResetBypassAddresses() {
 
 // Foundation the authentication to a external server
 func Foundation(config *types.Foundation, w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-	if !contains(r.URL.RequestURI()) {
+	if !isUnprotected(r.URL.RequestURI()) {
 		foundationID, _ := r.Cookie("FOUNDATIONID")
 		if foundationID == nil || len(foundationID.Value) == 0 {
 			r.URL.RawQuery = "callback=foundation"
