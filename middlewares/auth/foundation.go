@@ -25,6 +25,11 @@ func UpdateBypassAddress(address string) {
 	bypass[address] = true
 }
 
+//ResetBypassAddresses .
+func ResetBypassAddresses() {
+	bypass = make(map[string]bool)
+}
+
 // Foundation the authentication to a external server
 func Foundation(config *types.Foundation, w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	if !contains(r.URL.RequestURI()) {

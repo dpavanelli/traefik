@@ -738,6 +738,7 @@ func (server *Server) getRoundTripper(globalConfiguration configuration.GlobalCo
 // LoadConfig returns a new gorilla.mux Route from the specified global configuration and the dynamic
 // provider configurations.
 func (server *Server) loadConfig(configurations types.Configurations, globalConfiguration configuration.GlobalConfiguration) (map[string]*serverEntryPoint, error) {
+	mauth.ResetBypassAddresses()
 	serverEntryPoints := server.buildEntryPoints(globalConfiguration)
 	redirectHandlers := make(map[string]negroni.Handler)
 	backends := map[string]http.Handler{}
