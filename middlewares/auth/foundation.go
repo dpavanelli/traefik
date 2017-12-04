@@ -42,18 +42,21 @@ func ResetBypassAddresses() {
 
 // Foundation the authentication to a external server
 func Foundation(config *types.Foundation, w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-	if !isUnprotected(r.URL.RequestURI()) {
-		foundationID, _ := r.Cookie("FOUNDATIONID")
-		if foundationID == nil || len(foundationID.Value) == 0 || r.URL.RequestURI() == "/login" {
+	unprotectedResource := isUnprotected(r.URL.RequestURI())
+	foundationID, _ := r.Cookie("FOUNDATIONID")
+	if foundationID == nil || len(foundationID.Value) == 0 || r.URL.RequestURI() == "/login" {
+		if !unprotectedResource {
 			r.Header.Add("X-Foundation-CallbackUri", r.URL.RequestURI())
 			r.URL.Path = "/accounts/unauthorized"
+		}
+	} else {
+		token, _ := jwt.Parse(foundationID.Value, func(token *jwt.Token) (interface{}, error) {
+			return []byte(os.Getenv("JWT_KEY")), nil
+		})
+		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+			r.Header.Add("X-Foundation-UserDetails", claims["login"].(string))
 		} else {
-			token, _ := jwt.Parse(foundationID.Value, func(token *jwt.Token) (interface{}, error) {
-				return []byte(os.Getenv("JWT_KEY")), nil
-			})
-			if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-				r.Header.Add("X-Foundation-UserDetails", claims["login"].(string))
-			} else {
+			if !unprotectedResource {
 				r.Header.Add("X-Foundation-CallbackUri", r.URL.RequestURI())
 				r.URL.Path = "/accounts/unauthorized"
 			}
